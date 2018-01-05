@@ -1,7 +1,7 @@
 require 'stringio'
 
 class PartialDependencies
-  
+  RAILS_ROOT = "/home/r0gu3/code/huginn"
   def initialize(base_path = File.expand_path(File.join(RAILS_ROOT,"app", "views")))
     @base_path = base_path
   end
@@ -29,6 +29,7 @@ class PartialDependencies
     parse_files
     str.puts "digraph partial_dependencies {"
     name_to_node = {}
+#     puts instance_variable_get("@#{view_set}_views")
     instance_variable_get("@#{view_set}_views").each_with_index do |view, index|
       str.puts "Node#{index} [label=\"#{view}\"]"
       name_to_node[view] = "Node#{index}"
@@ -50,11 +51,15 @@ class PartialDependencies
     @edges = Hash.new {|hash,key| hash[key] = []}
     @used_views = {}
     @all_views = []
+    @render_regex = /=\s*render\s*(?:partial\:\ )?\s*?["'](.*?)["']/
     views.each do |view|
       @all_views << pwfe(view)
       File.open("#{view[:path]}") do |contents|
         contents.each do |line|
-          if line =~ /=\s*render\s*\(?:partial\s*=>\s*["'](.*?)["']/
+	  if line =~ /\s*render.*/
+            #puts line.strip
+	  end
+          if line =~ @render_regex
             partial_name = $1
             if partial_name.index("/")
               partial_name = partial_name.gsub(/\/([^\/]*)$/, "/_\\1")
@@ -64,6 +69,8 @@ class PartialDependencies
             @edges[pwfe(view)] << partial_name
             @used_views[pwfe(view)] = true
             @used_views[partial_name] = true
+	  else
+#	    puts "\t" + "NOT TRACKED"
           end
         end
       end
@@ -92,3 +99,4 @@ namespace :partial_dependencies do
     pd.dot(args.file_type || "png", args.view_set || "used")
   end
 end
+

@@ -2,14 +2,16 @@ Creates a dependency graph of all your views and partials. It parses all your vi
 
 Once the data has been extracted it is used to generate a graphical representation using GraphViz [1]. It is saved as RAILS_ROOT/partial_dependencies.png.
 
+Example
+-----------
+![Example Dependency Graph](https://raw.githubusercontent.com/baocin/partial_dependencies/master/example/partial_dependencies-used.png)
+Example was run on https://github.com/huginn/huginn (Commit #600b06c)
+
 Installation
 ------------
 
-Install via
-
-script/plugin install git://github.com/msales/partial_dependencies
-
-into your Rails application
+Update the RAILS_ROOT variable (first line of the PartialDependencies class)
+Copy the rake file to your_project/lib/tasks
 
 Usage
 -----
@@ -18,6 +20,6 @@ This plugin is basically just a rake task. If you run
 
 rake partial_dependencies:generate_picture
 
-it will generate a file called partial_dependencies.png (provided that Graphviz is installed) in your RAILS_ROOT.
+it will generate a file called partial_dependencies-used.png (provided that Graphviz is installed) in your RAILS_ROOT.
 
 [1] http://www.graphviz.org/
